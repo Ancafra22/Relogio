@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 int minute = calendar.get(calendar.MINUTE);
                 int second = calendar.get(calendar.SECOND);
 
-                mViewHolder.textHourMinute.setText(String.format(Locale.getDefault(),"%02d:%02d", hour, minute));
+                mViewHolder.textHourMinute.setText(String.format(Locale.getDefault(),"%d:%02d", hour, minute));
                 mViewHolder.textSecond.setText(String.format(Locale.getDefault(),"%02d", second));
 
                 long now = SystemClock.elapsedRealtime();
