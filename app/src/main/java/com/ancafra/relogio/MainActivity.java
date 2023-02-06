@@ -10,6 +10,7 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -18,8 +19,9 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private ViewHolder mViewHolder = new ViewHolder();
-    Runnable mRunnable;
+    private Runnable mRunnable;
     private Handler mHandler = new Handler();
+    private boolean mTicker = false;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -35,8 +37,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.initComponents();
-        this.startClock();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.registerReceiver(this.mReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        this.mTicker = true;
+        this.startClock();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.mTicker = false;
+        this.unregisterReceiver(this.mReceiver);
     }
 
     private void startClock() {
@@ -47,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         this.mRunnable = new Runnable() {
             @Override
             public void run() {
+
+                if(!mTicker) {
+                    return;
+                }
 
                 calendar.setTimeInMillis(System.currentTimeMillis());
 
@@ -76,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
         this.mViewHolder.textSecond = findViewById(R.id.text_seconds);
         this.mViewHolder.textBattery = findViewById(R.id.text_battery);
 
-        this.registerReceiver(this.mReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        this.mViewHolder.textHourMinute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),DetailsActivity.class));
+            }
+        });
     }
 }
