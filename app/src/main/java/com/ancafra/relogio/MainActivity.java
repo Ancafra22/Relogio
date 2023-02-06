@@ -12,6 +12,9 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.widget.TextView;
 
+import java.util.Calendar;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private ViewHolder mViewHolder = new ViewHolder();
@@ -37,12 +40,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startClock() {
+
+        Calendar calendar = Calendar.getInstance();
+
+
         this.mRunnable = new Runnable() {
             @Override
             public void run() {
 
+                calendar.setTimeInMillis(System.currentTimeMillis());
+
+                int hour = calendar.get(calendar.HOUR_OF_DAY);
+                int minute = calendar.get(calendar.MINUTE);
+                int second = calendar.get(calendar.SECOND);
+
+                mViewHolder.textHourMinute.setText(String.format(Locale.getDefault(),"%02d:%02d", hour, minute));
+                mViewHolder.textSecond.setText(String.format(Locale.getDefault(),"%02d", second));
+
                 long now = SystemClock.elapsedRealtime();
-                long next = 1000 + (1000 - (now % 1000));
+                long next = now + (1000 - (now % 1000));
                 mHandler.postAtTime(mRunnable, next);
             }
         };
