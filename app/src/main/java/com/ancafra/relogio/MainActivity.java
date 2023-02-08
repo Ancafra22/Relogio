@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import java.util.Calendar;
@@ -54,6 +55,21 @@ public class MainActivity extends AppCompatActivity {
         this.unregisterReceiver(this.mReceiver);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus){
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_IMMERSIVE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            );
+        }
+    }
+
     private void startClock() {
 
         Calendar calendar = Calendar.getInstance();
@@ -91,15 +107,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
+
+        if(getSupportActionBar() != null){
+            getSupportActionBar().hide();
+        }
         this.mViewHolder.textHourMinute = findViewById(R.id.text_hour_minute);
         this.mViewHolder.textSecond = findViewById(R.id.text_seconds);
         this.mViewHolder.textBattery = findViewById(R.id.text_battery);
 
-        this.mViewHolder.textHourMinute.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),DetailsActivity.class));
-            }
-        });
     }
 }
