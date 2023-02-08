@@ -98,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
                 mViewHolder.textSecond.setText(String.format(Locale.getDefault(), "%02d", second));
 
                 if (mLandscape) {
-                    if (hour >= 18) {
-                        mViewHolder.textNight.setVisibility(View.VISIBLE);
-                    } else {
-                        mViewHolder.textNight.setVisibility(View.GONE);
+                    if (hour >= 03 && hour <= 12) {
+                        mViewHolder.textNight.setText("Good Morning");
+                    } else if (hour > 12 && hour <= 18) {
+                        mViewHolder.textNight.setText("Good Afternoon");
+                    }else{
+                        mViewHolder.textNight.setText("Good Night");
                     }
                 }
 
