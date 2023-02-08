@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable mRunnable;
     private Handler mHandler = new Handler();
     private boolean mTicker = false;
+    private boolean mLandscape = false;
 
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.initComponents();
+
     }
 
     @Override
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         this.registerReceiver(this.mReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         this.mTicker = true;
+        this.mLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+
         this.startClock();
     }
 
@@ -58,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(hasFocus){
+        if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_IMMERSIVE
                             | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                if(!mTicker) {
+                if (!mTicker) {
                     return;
                 }
 
@@ -89,8 +94,16 @@ public class MainActivity extends AppCompatActivity {
                 int minute = calendar.get(calendar.MINUTE);
                 int second = calendar.get(calendar.SECOND);
 
-                mViewHolder.textHourMinute.setText(String.format(Locale.getDefault(),"%d:%02d", hour, minute));
-                mViewHolder.textSecond.setText(String.format(Locale.getDefault(),"%02d", second));
+                mViewHolder.textHourMinute.setText(String.format(Locale.getDefault(), "%d:%02d", hour, minute));
+                mViewHolder.textSecond.setText(String.format(Locale.getDefault(), "%02d", second));
+
+                if (mLandscape) {
+                    if (hour >= 18) {
+                        mViewHolder.textNight.setVisibility(View.VISIBLE);
+                    } else {
+                        mViewHolder.textNight.setVisibility(View.GONE);
+                    }
+                }
 
                 long now = SystemClock.elapsedRealtime();
                 long next = now + (1000 - (now % 1000));
@@ -100,20 +113,22 @@ public class MainActivity extends AppCompatActivity {
         mRunnable.run();
     }
 
-    public static class ViewHolder{
+    public static class ViewHolder {
         TextView textHourMinute;
         TextView textSecond;
         TextView textBattery;
+        TextView textNight;
     }
 
     private void initComponents() {
 
-        if(getSupportActionBar() != null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
         this.mViewHolder.textHourMinute = findViewById(R.id.text_hour_minute);
         this.mViewHolder.textSecond = findViewById(R.id.text_seconds);
         this.mViewHolder.textBattery = findViewById(R.id.text_battery);
+        this.mViewHolder.textNight = findViewById(R.id.textNight);
 
     }
 }
